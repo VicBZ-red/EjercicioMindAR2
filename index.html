@@ -11,7 +11,6 @@
         overflow: hidden;
       }
 
-  
       #overlay {
         position: absolute;
         top: 0; left: 0;
@@ -48,6 +47,8 @@
     </style>
   </head>
   <body>
+    <div id="overlay">🔍 Escaneando...</div>
+    <div id="message"></div>
 
     <a-scene mindar-image="imageTargetSrc: ./Pokeballs.mind;" 
              color-space="sRGB" 
@@ -62,13 +63,11 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <!-- Target 0 -->
       <a-entity mindar-image-target="targetIndex: 0" id="target-rattata">
         <a-gltf-model src="#Rattata" rotation="0 0 0" position="0 -0.25 0" scale="0.04 0.04 0.04" animation-mixer>
         </a-gltf-model>
       </a-entity>
 
-      <!-- Target 1 -->
       <a-entity mindar-image-target="targetIndex: 1" id="target-mewtwo">
         <a-gltf-model src="#Mewtwo" rotation="0 0 0" position="0 -0.25 0" scale="0.15 0.15 0.15" animation-mixer>
         </a-gltf-model>
@@ -80,7 +79,6 @@
       const overlay = document.getElementById("overlay");
       const message = document.getElementById("message");
 
-      // Ocultar overlay de "Escaneando..." después de 3s
       setTimeout(() => {
         overlay.classList.add("hidden");
       }, 3000);
