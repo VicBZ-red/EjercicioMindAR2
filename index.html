@@ -1,22 +1,64 @@
-
-
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-      <style>
-      #example-scanning-overlay {
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
       }
-      #example-scanning-overlay.hidden {
+
+  
+      #overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: black;
+        color: white;
+        font-size: 2em;
+        font-family: Arial, sans-serif;
+        z-index: 10;
+        transition: opacity 0.5s ease;
+      }
+
+      #overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* Mensaje de captura */
+      #message {
+        position: absolute;
+        top: 10%;
+        width: 100%;
+        text-align: center;
+        font-size: 2em;
+        font-family: Arial, sans-serif;
+        color: yellow;
+        text-shadow: 2px 2px 5px black;
+        z-index: 5;
         display: none;
       }
-      ...
-      </style>
+    </style>
   </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: ./Pokeballs.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <!-- Overlay inicial -->
+    <div id="overlay">🔍 Escaneando...</div>
+    <!-- Mensaje dinámico -->
+    <div id="message"></div>
+
+    <a-scene mindar-image="imageTargetSrc: ./Pokeballs.mind;" 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: false">
+
       <a-assets>
         <a-asset-item id="Mewtwo" src="./mewtwo.glb"></a-asset-item>
         <a-asset-item id="Rattata" src="./rattata.glb"></a-asset-item>
@@ -24,17 +66,48 @@
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.04 0.04 0.04" src="#Rattata" animation-mixer>
+      <!-- Target 0 -->
+      <a-entity mindar-image-target="targetIndex: 0" id="target-rattata">
+        <a-gltf-model src="#Rattata" rotation="0 0 0" position="0 -0.25 0" scale="0.04 0.04 0.04" animation-mixer>
+        </a-gltf-model>
       </a-entity>
-      <a-entity mindar-image-target="targetIndex: 1">
-        <a-gltf-model rotation="0 0 0 " position="0 -0.25 0" scale="0.15 0.15 0.15" src="#Mewtwo" animation-mixer>
+
+      <!-- Target 1 -->
+      <a-entity mindar-image-target="targetIndex: 1" id="target-mewtwo">
+        <a-gltf-model src="#Mewtwo" rotation="0 0 0" position="0 -0.25 0" scale="0.15 0.15 0.15" animation-mixer>
+        </a-gltf-model>
       </a-entity>
-      <div id="example-scanning-overlay" class="hidden">
-    ...
-  </div>
-  <a-scene mindar-image="uiScanning: #example-scanning-overlay; imageTargetSrc: ./Pokeballs.mind">
-    ...
+
     </a-scene>
+
+    <script>
+      const overlay = document.getElementById("overlay");
+      const message = document.getElementById("message");
+
+      // Ocultar overlay de "Escaneando..." después de 3s
+      setTimeout(() => {
+        overlay.classList.add("hidden");
+      }, 3000);
+
+      // --- Target Rattata ---
+      const rattata = document.getElementById("target-rattata");
+      rattata.addEventListener("targetFound", () => {
+        message.innerText = "¡Capturaste a Rattata!";
+        message.style.display = "block";
+      });
+      rattata.addEventListener("targetLost", () => {
+        message.style.display = "none";
+      });
+
+      // --- Target Mewtwo ---
+      const mewtwo = document.getElementById("target-mewtwo");
+      mewtwo.addEventListener("targetFound", () => {
+        message.innerText = "¡Capturaste a Mewtwo!";
+        message.style.display = "block";
+      });
+      mewtwo.addEventListener("targetLost", () => {
+        message.style.display = "none";
+      });
+    </script>
   </body>
 </html>
